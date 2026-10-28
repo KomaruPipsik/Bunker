@@ -1,0 +1,168 @@
+<!DOCTYPE html><html lang="ru"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover"><title>Бункер</title><style>
+:root{color-scheme:dark;--bg:#080b0e;--pn:#111a21;--ac:#35ffa0;--am:#ffb23d;--rd:#ff4d5e;--tx:#e6eef2;--mt:#7d8e99;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}
+*{box-sizing:border-box}html,body{height:100%;margin:0}
+body{background:radial-gradient(1100px 650px at 50% -10%,#123127,#080b0e 62%) fixed;color:var(--tx);font-family:'Segoe UI',system-ui,Arial,sans-serif;overflow-x:hidden}
+#app{min-height:100%;display:flex;flex-direction:column;align-items:center;justify-content:center;padding:16px}
+.scr{animation:in .6s ease both}@keyframes in{from{opacity:0;transform:translateY(14px)}to{opacity:1;transform:none}}
+h1{font-size:44px;letter-spacing:.3em;margin:0 0 4px;color:var(--ac);text-shadow:0 0 22px #35ffa088}h2{margin:0 0 8px;font-size:28px}h3{margin:0 0 8px}
+.mut{color:var(--mt)}.card{background:linear-gradient(160deg,#16222b,#0e161c);border:1px solid #243541;border-radius:18px;padding:26px;width:min(520px,100%);display:flex;flex-direction:column;gap:14px;align-items:center;text-align:center;box-shadow:0 20px 60px #000a,0 0 0 1px #35ffa014}
+.wide{width:min(760px,100%)}
+input[type=text],input:not([type]),select{width:100%;padding:12px 14px;border-radius:10px;border:1px solid #2c4150;background:#0a1117;color:var(--tx);font-size:16px;text-align:center}
+input[type=range]{width:100%;accent-color:var(--ac)}
+.btn,.ghost,.chip{font:inherit;cursor:pointer;border-radius:12px;border:1px solid var(--ac);color:#04130c;background:var(--ac);padding:12px 22px;font-weight:700;letter-spacing:.04em;transition:.2s;width:100%}
+.btn{animation:pulse 2s infinite}.btn:hover{transform:translateY(-2px);filter:brightness(1.1)}.btn[disabled]{opacity:.4;animation:none;cursor:default}
+@keyframes pulse{0%,100%{box-shadow:0 0 0 0 #35ffa066}50%{box-shadow:0 0 0 10px #35ffa000,0 0 22px #35ffa055}}
+.ghost{background:transparent;color:var(--ac);width:auto}.ghost:hover{background:#35ffa01a}.dng{border-color:var(--rd);color:var(--rd)}
+.chip{background:#0d171d;color:var(--tx);border-color:#2c4150;width:auto;display:inline-flex;gap:8px;align-items:center;padding:6px 12px 6px 6px;border-radius:30px;font-weight:500}
+.chip img{width:26px;height:26px;border-radius:50%}.hist{display:flex;flex-wrap:wrap;gap:8px;justify-content:center}
+.av-xl{width:120px;height:120px;border-radius:50%;border:3px solid var(--ac);box-shadow:0 0 28px #35ffa055;animation:in .5s both}
+.row{display:flex;gap:10px;flex-wrap:wrap;justify-content:center;width:100%}.row>*{flex:1;min-width:140px}
+.banner{width:100%;border-radius:12px;display:block}
+.stage-tag{color:var(--am);letter-spacing:.2em;font-size:12px;text-transform:uppercase}
+.items{display:flex;flex-wrap:wrap;gap:8px;justify-content:center}.items span{background:#0c151b;border:1px solid #243541;border-radius:8px;padding:6px 10px;font-size:13px;display:flex;gap:6px;align-items:center;animation:in .4s both}
+.ic{width:1.25em;height:1.25em;fill:none;stroke:currentColor;stroke-width:1.6;stroke-linejoin:round;stroke-linecap:round;flex:none}
+.lob{width:min(860px,100%);text-align:center}.top2{display:flex;justify-content:space-between;align-items:flex-end;gap:12px;flex-wrap:wrap;margin-bottom:20px}
+.code{font-size:clamp(40px,9vw,76px);font-weight:800;letter-spacing:.2em;color:var(--ac);text-shadow:0 0 26px #35ffa077;line-height:1}
+.cnt{font-size:20px;border:1px solid #2c4150;border-radius:30px;padding:8px 18px;background:#0d171d}
+.ring{display:flex;flex-wrap:wrap;gap:22px;justify-content:center;margin:26px 0;min-height:130px}
+.pl{width:92px;text-align:center;font-size:14px}.pl img{width:80px;height:80px;border-radius:50%;border:3px solid #2c4150;transition:.3s}.pl.rdy img{border-color:var(--ac);box-shadow:0 0 18px #35ffa077}.pop{animation:pop .5s cubic-bezier(.3,1.6,.5,1)}
+@keyframes pop{from{transform:scale(0)}to{transform:none}}.pl b{display:block;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.case{position:relative;width:min(760px,100%);background:linear-gradient(#2a2f33,#16191c);border:3px solid #3b434a;border-radius:16px;padding:16px;min-height:300px;transition:.8s}
+.lid{position:absolute;inset:-3px;border-radius:16px;background:repeating-linear-gradient(90deg,#3a4147 0 8px,#31373c 8px 16px);border:3px solid #596269;display:grid;place-items:center;letter-spacing:.4em;color:var(--am);font-weight:800;transform-origin:50% 0;transition:transform 1s,opacity 1s;z-index:3;transform:perspective(900px) rotateX(0)}
+.case.open .lid{transform:perspective(900px) rotateX(-115deg);opacity:0;pointer-events:none}
+.cg{display:grid;grid-template-columns:repeat(auto-fit,minmax(130px,1fr));gap:12px}.case.closing .cg{opacity:0;transition:.6s}
+.fc{perspective:700px;height:150px;cursor:pointer;opacity:0}.case.open .fc{animation:in .6s both;animation-delay:calc(var(--i)*.12s + .7s)}
+.fi{position:relative;width:100%;height:100%;transition:transform .6s;transform-style:preserve-3d}.fc.f .fi{transform:rotateY(180deg)}
+.fa,.fb{position:absolute;inset:0;border-radius:12px;backface-visibility:hidden;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:8px;padding:10px;text-align:center}
+.fa{background:linear-gradient(150deg,#1d2c35,#101a20);border:1px solid #35ffa055;color:var(--ac)}.fa .ic{width:36px;height:36px}
+.fb{transform:rotateY(180deg);background:#f0e6cf;color:#1b1710;font-size:14px;font-weight:600;border:2px solid var(--am)}.fb small{color:#8a6a1b;text-transform:uppercase;letter-spacing:.1em;font-size:10px}
+.hdr{display:flex;align-items:center;justify-content:space-between;gap:12px;width:100%;margin-bottom:8px}.rem{border:1px solid var(--am);color:var(--am);border-radius:30px;padding:8px 16px}
+.tmr{position:relative;width:64px;height:64px}.tmr svg{transform:rotate(-90deg)}.tmr span{position:absolute;inset:0;display:grid;place-items:center;font-weight:700}
+.tw{display:flex;gap:16px;width:min(1100px,100%);align-items:center}.stage{flex:1;display:grid;place-items:center}
+.tb{position:relative;width:min(70vh,92vw,640px);aspect-ratio:1;border-radius:50%;background:radial-gradient(circle,#1c2b2d 0,#0f191c 60%,#0a1114 61%,#0a1114 100%);box-shadow:inset 0 0 60px #000,0 0 0 2px #243541,0 0 50px #35ffa022;animation:spin 1.8s cubic-bezier(.2,.8,.2,1)}
+@keyframes spin{from{transform:rotate(-200deg) scale(.5);opacity:0}to{transform:none;opacity:1}}
+.tc{position:absolute;inset:30%;border-radius:50%;border:1px dashed #35ffa044;display:grid;place-items:center;color:var(--ac);letter-spacing:.3em;font-weight:800;text-align:center}
+.seat{position:absolute;transform:translate(-50%,-50%);text-align:center;width:96px;transition:.5s}.seat img{width:var(--as);height:var(--as);border-radius:50%;border:2px solid #35ffa088;cursor:pointer;transition:.2s}.seat img:hover{transform:scale(1.12)}
+.seat b{display:block;font-size:12px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}.seat.me img{border-color:var(--am)}.seat.dead{opacity:.35;filter:grayscale(1)}
+.sc{display:flex;flex-direction:column;gap:2px;align-items:center}.sc i{font-style:normal;font-size:10px;background:#f0e6cf;color:#1b1710;border-radius:5px;padding:1px 5px;max-width:96px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;animation:pop .5s both}
+.sd{width:290px;background:#0f181e;border:1px solid #243541;border-radius:16px;padding:16px;display:flex;flex-direction:column;gap:8px;animation:in .6s both}
+.opt{font:inherit;color:var(--tx);background:#0a1117;border:1px solid #2c4150;border-radius:10px;padding:9px 11px;text-align:left;cursor:pointer;display:flex;gap:8px;align-items:center;transition:.2s}.opt img{width:28px;height:28px;border-radius:50%}.opt:hover{border-color:var(--ac)}.opt.on{border-color:var(--ac);background:#35ffa01f;box-shadow:0 0 14px #35ffa033}
+.bd{position:fixed;inset:0;background:#000b;display:grid;place-items:center;z-index:9;animation:in .3s;padding:16px}.mdl{background:#0f181e;border:1px solid var(--ac);border-radius:18px;padding:22px;width:min(480px,100%);max-height:90vh;overflow:auto;text-align:center}.mdl img{width:84px;height:84px;border-radius:50%}
+.tile{display:flex;gap:10px;align-items:center;background:#f0e6cf;color:#1b1710;border-radius:10px;padding:9px 12px;margin-top:8px;text-align:left;animation:in .4s both}.tile small{display:block;color:#8a6a1b;text-transform:uppercase;font-size:10px;letter-spacing:.1em}.tile.hid{background:#1a252d;color:#9fb0ba}
+.wait{display:flex;gap:10px;align-items:center;color:var(--mt)}.sp{width:16px;height:16px;border:2px solid var(--ac);border-top-color:transparent;border-radius:50%;animation:r 1s linear infinite}@keyframes r{to{transform:rotate(360deg)}}
+@media(max-width:860px){.tw{flex-direction:column}.sd{width:100%}}
+</style></head><body><div id="app"></div><div id="md"></div><script>
+const $=s=>document.querySelector(s),R=a=>a[Math.random()*a.length|0],S=s=>s.split(','),rnd=n=>Math.random()*n|0,shuf=a=>a.map(x=>[Math.random(),x]).sort((a,b)=>a[0]-b[0]).map(x=>x[1]);
+const esc=s=>String(s).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+const ls={g(k,d){try{const v=JSON.parse(localStorage.getItem(k));return v==null?d:v}catch(e){return d}},s(k,v){try{localStorage.setItem(k,JSON.stringify(v))}catch(e){}}};
+const CATS=`Зомби-апокалипсис|Вирус превращает людей в агрессивных мертвецов.
+Глобальное наводнение|Океаны поглотили континенты.
+Ядерная зима|Пепел закрыл небо, температура упала до минус 40.
+Падение метеорита|Гигантский астероид разрушил атмосферу.
+Восстание ИИ|Машины решили, что люди — угроза.
+Супервулкан|Йеллоустоун проснулся, пепел покрыл планету.
+Пандемия «Красный кашель»|Смертельный вирус с летальностью 80%.
+Вторжение пришельцев|Корабли зависли над всеми столицами.
+Солнечная вспышка|Вся электроника на планете выгорела.
+Ледниковый период|Мир замёрз за три недели.
+Химическая война|Города накрыли ядовитые облака.
+Грибная чума|Споры гриба захватывают разум людей.
+Разлом Земли|Трещины раскололи континенты.
+Падение спутников|Орбитальные обломки бомбят планету.
+Кислотные дожди|Дожди разъедают всё живое.
+Биологическая война|Мутировавшие бактерии вышли из лабораторий.
+Чёрная дыра|Аномалия втягивает материю у границ системы.
+Массовая мутация|Радиация превратила живое в чудовищ.
+Потеря кислорода|Содержание кислорода падает с каждым днём.
+Климатический коллапс|Жара выше 60 градусов выжгла экватор.
+Нашествие насекомых|Гигантские рои уничтожают урожаи и людей.
+Взрыв сверхновой|Гамма-излучение стерилизует поверхность.
+Цунами столетия|Волны в километр высотой смыли побережья.
+Эпидемия безумия|Неизвестный сигнал сводит людей с ума.
+Ядерная война|Мир превратился в радиоактивную пустошь.`.split('\n');
+const SZ=['Компактный бункер на 40 м²','Средний бункер на 120 м²','Просторный бункер на 300 м²','Подземный комплекс на 800 м²','Огромный бункер-город на 2000 м²'];
+const ST=S('полностью цел,с трещинами в стенах,частично затоплен,с рабочей лабораторией,с секретной комнатой,со сломанной вентиляцией,с запасом еды на 2 года,с неисправным генератором,с оранжереей,с заражёнными нижними этажами');
+const LOC=S('под горой,в старой шахте,под руинами города,в глубине леса,на морском побережье,посреди пустыни');
+const ITEMS=S(`Консервы,Генератор,Пластыри,Фильтры для воды,Оружие,Патроны,Бочки с водой,Аптечка,Лампы,Батареи,Радиостанция,Противогазы,Дозиметры,Семена,Теплица,Инструменты,Верёвки,Одеяла,Матрасы,Скафандры,Топливо,Спирт,Антибиотики,Рис,Мука,Крупы,Сухари,Сахар,Соль,Чай,Кофе,Консервированные овощи,Тушёнка,Сгущёнка,Мёд,Масло,Лук,Картофель,Свечи,Спички,Книги,Настольные игры,Музыкальный центр,Гитара,Карты местности,Компас,Бинокли,Фонари,Солнечные панели,Аккумуляторы,Печь,Дрова,Уголь,Лопаты,Топоры,Пилы,Гвозди,Доски,Цемент,Краска,Швейная машинка,Ткань,Обувь,Тёплая одежда,Мыло,Зубные щётки,Туалетная бумага,Дезинфектор,Хлорка,Таблетки йода,Хирургический набор,Шприцы,Гипс,Бинты,Рентген-аппарат,Микроскоп,Химическая лаборатория,Компьютер,Спутниковая антенна,Камеры наблюдения,Сейф,Ружьё,Арбалет,Ножи,Бронежилеты,Рация,Вентиляторы,Нагреватель,Холодильник,Морозильник,Колодец,Водопровод,Насос,Очиститель воздуха,Грядки с грибами,Курятник,Удочки,Сети,Лодка,Велосипед-генератор`);
+const KEYS=['Биология','Профессия','Хобби','Здоровье','Фобия','Характер','Багаж','Умение'];
+const IC=['M12 12a4 4 0 100-8 4 4 0 000 8zm-8 9c0-4 4-6 8-6s8 2 8 6','M3 8h18v12H3zM9 8V5h6v3','M12 3l2.6 5.6 6 .7-4.4 4.2 1.1 6L12 16.6 6.7 19.5l1.1-6L3.4 9.3l6-.7z','M9 3h6v6h6v6h-6v6H9v-6H3V9h6z','M2 12s4-7 10-7 10 7 10 7-4 7-10 7S2 12 2 12zm10-3a3 3 0 100 6 3 3 0 000-6z','M12 21s-8-5-8-11a4.5 4.5 0 018-2.5A4.5 4.5 0 0120 10c0 6-8 11-8 11z','M5 8h14l1 13H4zM9 8a3 3 0 016 0','M13 2L4 14h7l-1 8 9-12h-7z'];
+const ic=i=>`<svg class="ic" viewBox="0 0 24 24"><path d="${IC[i]}"/></svg>`;
+const D=[null,
+S('Врач,Инженер,Повар,Учитель,Электрик,Пилот,Военный,Фермер,Хирург,Программист,Сантехник,Психолог,Биолог,Химик,Механик,Строитель,Плотник,Агроном,Ветеринар,Фельдшер,Радист,Охотник,Библиотекарь,Журналист,Юрист,Музыкант,Художник,Кондитер,Пожарный,Полицейский,Физик,Геолог,Метеоролог,Фармацевт,Стоматолог,Слесарь,Сварщик,Водитель,Рыбак,Пекарь,Парикмахер,Актёр,Менеджер,Бухгалтер,Тренер,Монтажник,Водолаз,Атомщик,Эколог,Дипломат'),
+S('Шахматы,Рыбалка,Вышивка,Скалолазание,Радиолюбительство,Кулинария,Садоводство,Фотография,Гитара,Йога,Бокс,Пчеловодство,Резьба по дереву,Выживание в лесу,Стрельба из лука,Шитьё,Коллекционирование монет,Астрономия,Пение,Танцы,Вязание,Чтение,Бег,Плавание,Ориентирование,Настольные игры,Рисование,Мотоциклы,Паркур,Моделирование,Гончарное дело,Изучение языков,Фокусы,Видеоигры,Дайвинг,Охота,Походы,Лепка,Каллиграфия,Скалодром,Самбо,Туризм,Ремонт техники,Травничество,Волонтёрство,Стендап,Кузнечное дело,Варка мыла,Тайцзи,Велоспорт'),
+null,
+S('темноты,высоты,замкнутых пространств,пауков,змей,воды,огня,крови,толпы,одиночества,шума,глубины,собак,крыс,иголок,грома,полётов,пустоты,открытых пространств,микробов,врачей,клоунов,зеркал,лифтов,тумана,лошадей,птиц,насекомых,мостов,кукол,грязи,тишины,болезней,старения,ответственности,публичных выступлений,лекарств,радиации,мёртвых,призраков,вида еды,скрипа,теней,ветра,снега,леса,лестниц,чисел,контактов,перемен').map(x=>'Боязнь '+x),
+S('Лидер,Трус,Альтруист,Эгоист,Хитрец,Лжец,Добряк,Вспыльчивый,Спокойный,Параноик,Оптимист,Пессимист,Дипломат,Упрямый,Ленивый,Трудоголик,Болтливый,Молчун,Храбрый,Хладнокровный,Мстительный,Щедрый,Жадный,Весельчак,Зануда,Педант,Авантюрист,Робкий,Честный,Манипулятор,Мечтатель,Скептик,Заботливый,Конфликтный,Внимательный,Рассеянный,Гордый,Скромный,Любопытный,Агрессивный,Терпеливый,Нетерпеливый,Суеверный,Рациональный,Импульсивный,Преданный,Циничный,Наивный,Харизматичный,Меланхолик'),
+S('Аптечка,Топор,Набор семян,Рация,Ноутбук,Гитара,Фонарик,Палатка,Спальник,Книга рецептов,Компас,Бинокль,Мультитул,Карты,Шахматы,Канистра воды,Консервы,Радиоприёмник,Верёвка,Нож,Зажигалка,Тёплые одеяла,Набор инструментов,Солнечная панель,Аккумулятор,Лопата,Удочка,Рюкзак с едой,Книга по медицине,Противогаз,Дозиметр,Спутниковый телефон,Швейный набор,Антибиотики,Игральные карты,Бутылка виски,Фотоальбом,Плюшевый мишка,Мешок муки,Курица в клетке,Походная печка,Фильтр для воды,Арбалет,Рыболовная сеть,Набор отмычек,Планшет с играми,Огнетушитель,Пара раций,Тетрадь с заметками,Кот в переноске'),
+S('Первая помощь,Ремонт электроники,Знание ядов,Готовка из ничего,Выращивание растений,Навигация по звёздам,Знание языков,Быстрое обучение,Гипноз,Лидерство,Взлом замков,Метание ножей,Сварка,Знание радиации,Дрессировка,Знание трав,Плотницкое дело,Шитьё,Рукопашный бой,Стрельба,Переговоры,Чтение людей,Вождение любой техники,Знание химии,Хирургия,Психотерапия,Строительство,Охота,Рыбалка,Сбор воды,Починка генератора,Чтение карт,Акробатика,Выносливость,Сон без отдыха,Идеальная память,Знание истории,Поднимает дух музыкой,Шифры,Знание ферм,Обустройство лагеря,Приготовление лекарств,Электрика,Умение торговаться,Скрытность,Юмор,Обучение детей,Метеопрогноз,Починка обуви,Ориентирование')];
+const H1=S('Астма,Диабет,Гипертония,Близорукость,Аллергия на пыль,Больная спина,Бессонница,Анемия,Больное сердце,Проблемы со слухом'),H2=S('лёгкая форма,под контролем лекарств,средняя тяжесть,обострение,тяжёлая форма');
+const BN=S('Алекс,Марта,Борис,Ирина,Глеб,Нина,Тимур,Лея,Роман,Вера,Эльза,Макс,Яна,Олег,Зоя,Кир,Ада,Дан,Мира,Лука');
+let uid=0;
+function av(seed){let h=0;for(const c of String(seed))h=(h*31+c.charCodeAt(0))>>>0;const r=n=>{h=(h*1103515245+12345)>>>0;return (h>>>8)%n};const a=r(360),b=(a+60+r(80))%360,sk=['#f1c9a5','#d9a47a','#a97650','#7a4f35'][r(4)],hr=['#222','#5a3b22','#c9a24a','#8a2f2f','#ccc'][r(5)];
+return 'data:image/svg+xml;utf8,'+encodeURIComponent(`<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100"><defs><linearGradient id="g" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="hsl(${a},70%,35%)"/><stop offset="1" stop-color="hsl(${b},70%,16%)"/></linearGradient></defs><rect width="100" height="100" fill="url(#g)"/><path d="M15 100q0-26 35-26t35 26z" fill="hsl(${b},50%,45%)"/><circle cx="50" cy="46" r="19" fill="${sk}"/><path d="M30 44q0-22 20-22t20 22q-8-10-20-10t-20 10z" fill="${hr}"/><circle cx="43" cy="48" r="2" fill="#111"/><circle cx="57" cy="48" r="2" fill="#111"/><path d="M44 57q6 4 12 0" stroke="#111" fill="none" stroke-width="1.6"/></svg>`)}
+const BAN=(k)=>k?`<svg class="banner" viewBox="0 0 400 120"><defs><linearGradient id="s" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#1b2f2a"/><stop offset="1" stop-color="#0a1114"/></linearGradient></defs><rect width="400" height="120" fill="url(#s)"/><path d="M0 120L90 40l60 45 70-60 90 70 90-40v65z" fill="#0c1a18" stroke="#35ffa055"/><rect x="170" y="70" width="60" height="50" rx="4" fill="#16232a" stroke="#35ffa0"/><circle cx="200" cy="96" r="10" fill="none" stroke="#ffb23d" stroke-width="3"/></svg>`:`<svg class="banner" viewBox="0 0 400 120"><defs><radialGradient id="r"><stop offset="0" stop-color="#ff4d5e"/><stop offset="1" stop-color="#ff4d5e00"/></radialGradient></defs><rect width="400" height="120" fill="#0b0f13"/><circle cx="270" cy="50" r="70" fill="url(#r)"/><circle cx="270" cy="50" r="26" fill="#ff4d5e"/><path d="M0 120V80h30V55h25v30h30V65h25v55h35V70h30v50h40V75h30v45h40V60h28v60h30V85h27v35z" fill="#05080a"/></svg>`;
+let me=ls.g('bk_me',null),L=null,G=null,T=null,CS='';
+const app=$('#app');function show(h,c){clearInterval(T);app.className='scr';app.innerHTML=h;app.style.animation='none';app.offsetHeight;app.style.animation=''}
+function profile(){const hist=ls.g('bk_hist',[]);CS=me?me.seed:Math.random().toString(36).slice(2);
+show(`<div class="card"><h1>БУНКЕР</h1><div class="mut">Профиль выжившего</div><img id="pv" class="av-xl" src="${av(CS)}"><button class="ghost" onclick="reroll()">Сгенерировать аватар</button><input id="nick" maxlength="16" placeholder="Ваш никнейм" value="${me?esc(me.name):''}">${hist.length?`<div class="mut">Прошлые профили</div><div class="hist">${hist.map((h,i)=>`<button class="chip" onclick="pickH(${i})"><img src="${av(h.seed)}">${esc(h.name)}</button>`).join('')}</div>`:''}<button class="btn" onclick="saveMe()">Продолжить</button></div>`)}
+function reroll(){CS=Math.random().toString(36).slice(2);$('#pv').src=av(CS)}
+function pickH(i){const h=ls.g('bk_hist',[])[i];$('#nick').value=h.name;CS=h.seed;$('#pv').src=av(CS)}
+function saveMe(){const n=$('#nick').value.trim();if(!n){$('#nick').focus();return}me={name:n,seed:CS};ls.s('bk_me',me);ls.s('bk_hist',[me,...ls.g('bk_hist',[]).filter(h=>h.name!==n)].slice(0,6));menu()}
+function menu(){show(`<div class="card"><h1>БУНКЕР</h1><img class="av-xl" src="${av(me.seed)}"><h2>${esc(me.name)}</h2><button class="btn" onclick="createScr()">Создать лобби</button><button class="ghost" style="width:100%" onclick="joinScr()">Вступить в лобби по коду</button><button class="ghost" style="width:100%;border-color:#2c4150;color:var(--mt)" onclick="profile()">Сменить профиль</button></div>`)}
+function createScr(){show(`<div class="card"><h2>Настройки лобби</h2><div class="mut">Вы станете админом</div><label style="width:100%">Игроков: <b id="pv2">8</b><input type="range" id="mx" min="2" max="16" value="8" oninput="$('#pv2').textContent=this.value"></label><label style="width:100%">Таймер обсуждения<select id="tm"><option value="30">30 секунд</option><option value="60">60 секунд</option><option value="90">90 секунд</option><option value="120">120 секунд</option></select></label><button class="btn" onclick="createLobby()">Создать</button><button class="ghost" style="width:100%" onclick="menu()">Назад</button></div>`)}
+const gen=()=>Array.from({length:5},()=>R([...'ABCDEFGHJKLMNPQRSTUVWXYZ23456789'])).join('');
+function reg(f){const r=ls.g('bk_lob',{});f(r);ls.s('bk_lob',r)}
+function mkp(u,bot){let name=u&&u.name,seed=u&&u.seed;if(bot){const used=L?L.players.map(p=>p.name):[];name=R(BN.filter(n=>!used.includes(n))||BN);seed=Math.random().toString(36).slice(2)}return{id:bot?'b'+(++uid):'me',name,seed,bot,ready:false,n:1,at:Date.now()+900+rnd(1500)}}
+function addBot(){if(!L)return;const f=BN.filter(n=>!L.players.some(p=>p.name===n));if(!f.length)return;const p=mkp(null,true);p.name=R(f);L.players.push(p)}
+function createLobby(){const max=+$('#mx').value,timer=+$('#tm').value,code=gen();L={code,max,timer,admin:true,open:true,players:[mkp(me,false)],target:Math.min(max,Math.max(2,max-rnd(3)))};reg(r=>r[code]={open:true,max,timer});lobbyScr()}
+function joinScr(){show(`<div class="card"><h2>Вход по коду</h2><input id="jc" maxlength="6" placeholder="КОД" style="text-transform:uppercase;letter-spacing:.3em;font-size:24px"><div id="err" style="color:var(--rd)"></div><button class="btn" onclick="joinGo()">Войти</button><button class="ghost" style="width:100%" onclick="menu()">Назад</button></div>`)}
+function joinGo(){const c=$('#jc').value.trim().toUpperCase(),r=ls.g('bk_lob',{})[c];if(!r||!r.open){$('#err').textContent='Лобби не найдено или закрыто';return}L={code:c,max:r.max,timer:r.timer,admin:false,open:true,players:[mkp(me,false)],target:Math.min(r.max,Math.max(2,r.max-rnd(2)))};for(let i=0;i<Math.min(2,r.max-1);i++)addBot();lobbyScr()}
+function lobbyScr(){show(`<div class="lob"><div class="top2"><div style="text-align:left"><span class="mut">КОД КОМНАТЫ</span><div class="code" id="code"></div></div><div class="cnt" id="cnt"></div></div><div class="ring" id="ring"></div><div class="row" id="act"></div></div>`);L.ak='';L.int=setInterval(ltick,1400);ltick()}
+function ltick(){if(!L)return;const now=Date.now();if(L.open&&L.players.length<L.target)addBot();L.players.forEach(p=>{if(p.bot&&!p.ready&&now>p.at)p.ready=true});
+if(L.players.length>=2&&L.players.every(p=>p.ready)&&!L.starting){L.starting=1;lview();setTimeout(startGame,1000);return}lview()}
+function lview(){$('#code').textContent=L.code;$('#cnt').textContent=`Игроки: ${L.players.length}/${L.max}`;
+$('#ring').innerHTML=L.players.map(p=>{const h=`<div class="pl ${p.ready?'rdy':''} ${p.n?'pop':''}"><img src="${av(p.seed)}"><b>${esc(p.name)}</b></div>`;p.n=0;return h}).join('');
+const m=L.players[0],k=[L.open,m.ready,L.starting].join();if(k!==L.ak){L.ak=k;$('#act').innerHTML=`<button class="btn" ${L.starting?'disabled':''} onclick="toggleReady()">${m.ready?'Отменить готовность':'Готово'}</button>`+(L.admin?`<button class="ghost dng" ${L.open?'':'disabled'} onclick="closeLobby()">${L.open?'Закрыть лобби':'Лобби закрыто'}</button><button class="ghost" onclick="newCode()">Сменить код</button>`:'')+`<button class="ghost" style="border-color:#2c4150;color:var(--mt)" onclick="leave()">Выйти</button>`}}
+function toggleReady(){L.players[0].ready=!L.players[0].ready;L.ak='';lview()}
+function closeLobby(){L.open=false;reg(r=>{if(r[L.code])r[L.code].open=false});L.ak='';lview()}
+function newCode(){const o=L.code;L.code=gen();reg(r=>{const v=r[o];delete r[o];r[L.code]=v||{open:L.open,max:L.max,timer:L.timer}});lview()}
+function leave(){if(L){clearInterval(L.int);if(L.admin)reg(r=>delete r[L.code])}L=null;menu()}
+function mkCards(){return KEYS.map((k,i)=>({k,i,open:false,v:i==0?R(['Мужчина','Женщина'])+', '+(18+rnd(53))+' лет':i==3?(Math.random()<.15?'Абсолютно здоров':R(H1)+', '+R(H2)):R(D[i])}))}
+function startGame(){clearInterval(L.int);const ps=L.players.map(p=>({...p,cards:mkCards(),alive:true,shown:[]}));
+G={ps,me:ps[0],timer:L.timer,target:Math.max(1,ps.length>>1),round:1,cat:R(CATS).split('|'),bk:{d:`${R(SZ)}, расположен ${R(LOC)}. Состояние: ${R(ST)}.`,it:shuf(ITEMS).slice(0,2+rnd(14))}};L=null;catScr()}
+function catScr(){show(`<div class="card wide"><div class="stage-tag">Этап 1 из 5 — Катастрофа</div>${BAN(0)}<h2>${G.cat[0]}</h2><p>${G.cat[1]}</p><p class="mut">Поверхность непригодна для жизни. Единственный шанс — бункер.</p><button class="btn" onclick="bunkerScr()">Далее</button></div>`)}
+function bunkerScr(){show(`<div class="card wide"><div class="stage-tag">Этап 2 из 5 — Бункер</div>${BAN(1)}<p style="font-size:18px;margin:0">${G.bk.d}</p><div class="mut">Припасы и оборудование (${G.bk.it.length})</div><div class="items">${G.bk.it.map((x,i)=>`<span style="animation-delay:${i*.05}s">${ic(6)}${x}</span>`).join('')}</div><button class="btn" onclick="caseScr()">Далее</button></div>`)}
+function caseScr(){show(`<div class="stage-tag" style="margin-bottom:10px">Этап 3 из 5 — Ваш чемодан · нажмите на карточку, чтобы открыть</div><div class="case" id="cs"><div class="lid">ЧЕМОДАН</div><div class="cg">${G.me.cards.map((c,i)=>`<div class="fc" style="--i:${i}" onclick="this.classList.toggle('f')"><div class="fi"><div class="fa">${ic(c.i)}<b>${c.k}</b></div><div class="fb"><small>${c.k}</small>${esc(c.v)}</div></div></div>`).join('')}</div></div><div id="cb" style="width:min(420px,100%);margin-top:16px"><button class="btn" onclick="caseDone()">Готово</button></div>`);setTimeout(()=>$('#cs').classList.add('open'),400)}
+function caseDone(){$('#cb').innerHTML='<div class="wait"><div class="sp"></div>Ожидание остальных игроков…</div>';setTimeout(()=>{$('#cs').classList.add('closing');$('#cs').classList.remove('open');setTimeout(tableScr,1100)},1800)}
+function tableScr(){show(`<div class="hdr" style="width:min(1100px,100%)"><div><b id="rd"></b><div class="mut" id="ph"></div></div><div class="tmr"><svg width="64" height="64"><circle cx="32" cy="32" r="28" fill="none" stroke="#243541" stroke-width="5"/><circle id="rg" cx="32" cy="32" r="28" fill="none" stroke="#35ffa0" stroke-width="5" stroke-dasharray="176" stroke-dashoffset="0" stroke-linecap="round"/></svg><span id="tm">--</span></div><div class="rem" id="rem"></div></div><div class="tw"><div class="stage"><div class="tb" id="tb"></div></div><aside class="sd" id="sd"></aside></div>`);talk()}
+function upd(t){$('#tm').textContent=t;$('#rg').style.strokeDashoffset=176*(1-t/G.timer)}
+function talk(){G.ph='talk';let t=G.timer;draw();upd(t);T=setInterval(()=>{t--;upd(Math.max(t,0));if(t<=0){clearInterval(T);pick()}},1000)}
+function skipTalk(){clearInterval(T);pick()}
+function pick(){clearInterval(T);G.ph='pick';G.sel=null;draw();$('#tm').textContent='--';if(!G.me.alive)setTimeout(doReveal,900)}
+function selC(i){G.sel=i;draw()}
+function doReveal(){const m=G.me;if(m.alive){const f=m.cards.filter(c=>!c.open);if(f.length){if(G.sel==null)return;const c=m.cards[G.sel];c.open=true;m.shown.push(c)}}
+G.ps.forEach(p=>{if(p.alive&&p.bot){const f=p.cards.filter(c=>!c.open);if(f.length){const c=R(f);c.open=true;p.shown.push(c)}}});G.ph='reveal';draw();setTimeout(vote,2800)}
+function vote(){G.ph='vote';G.v=undefined;draw();if(!G.me.alive)setTimeout(resolve,1500)}
+function castVote(v){G.v=v;draw()}
+function resolve(){const al=G.ps.filter(p=>p.alive),cnt={};let sk=0;const pop=R(al).id;
+al.forEach(p=>{let v;if(p.bot){const o=al.filter(x=>x!==p);v=Math.random()<.15?'skip':(Math.random()<.55&&pop!=p.id?pop:R(o).id)}else v=G.v;if(v==null)return;if(v=='skip')sk++;else cnt[v]=(cnt[v]||0)+1});
+let mx=0,top=[];for(const k in cnt){if(cnt[k]>mx){mx=cnt[k];top=[k]}else if(cnt[k]==mx)top.push(k)}
+let msg;if(top.length!=1||sk>=mx)msg='Никто не изгнан: голоса разделились или большинство за пропуск.';else{const x=G.ps.find(p=>p.id==top[0]);x.alive=false;msg='Изгнан из бункера: '+x.name+'.'}
+G.msg=msg;G.ph='res';draw();setTimeout(()=>{if(G.ps.filter(p=>p.alive).length<=G.target)endScr();else{G.round++;talk()}},3300)}
+const PH={talk:'Обсуждение',pick:'Выберите карточку для раскрытия',reveal:'Карточки раскрыты',vote:'Голосование',res:'Итог голосования'};
+function draw(){const n=G.ps.length,al=G.ps.filter(p=>p.alive).length;$('#rd').textContent='Раунд '+G.round;$('#ph').textContent=PH[G.ph];$('#rem').textContent='Осталось изгнать: '+(al-G.target);
+const tb=$('#tb');tb.style.setProperty('--as',(n>10?40:n>6?50:60)+'px');
+const old=tb.dataset.n!=n;if(old){tb.dataset.n=n;tb.innerHTML=`<div class="tc">БУНКЕР</div>`+G.ps.map((p,i)=>{const a=i/n*Math.PI*2-Math.PI/2;return `<div class="seat" id="s_${p.id}" style="left:${50+43*Math.cos(a)}%;top:${50+43*Math.sin(a)}%"><img src="${av(p.seed)}" onclick="openP('${p.id}')"><b></b><div class="sc"></div></div>`}).join('')}
+G.ps.forEach(p=>{const s=$('#s_'+p.id);s.className='seat'+(p.alive?'':' dead')+(p.id=='me'?' me':'');s.querySelector('b').textContent=p.name;const sc=s.querySelector('.sc'),have=sc.children.length;p.shown.slice(have).forEach(c=>{const i=document.createElement('i');i.title=c.k;i.textContent=c.k+': '+c.v;sc.appendChild(i)})});
+const m=G.me,sd=$('#sd');let h='';
+if(G.ph=='talk')h=`<h3>Обсуждение</h3><p class="mut">Убедите остальных, что именно вы нужны бункеру. Нажмите на аватар, чтобы посмотреть карточки игрока.</p><button class="btn" onclick="skipTalk()">Завершить досрочно</button>`;
+else if(G.ph=='pick'){const f=m.cards.map((c,i)=>[c,i]).filter(x=>!x[0].open);h=m.alive?`<h3>Что раскрыть?</h3>${f.length?f.map(([c,i])=>`<button class="opt ${G.sel==i?'on':''}" onclick="selC(${i})">${ic(c.i)}<span><small class="mut">${c.k}</small><br>${esc(c.v)}</small></span></button>`).join(''):'<p class="mut">Все карточки уже раскрыты.</p>'}<button class="btn" onclick="doReveal()">Готово</button>`:'<div class="wait"><div class="sp"></div>Вы изгнаны. Наблюдайте.</div>'}
+else if(G.ph=='reveal')h='<div class="wait"><div class="sp"></div>Карточки раскрываются…</div>';
+else if(G.ph=='vote'){h=m.alive?`<h3>Кого изгнать?</h3>${G.ps.filter(p=>p.alive&&p.id!='me').map(p=>`<button class="opt ${G.v==p.id?'on':''}" onclick="castVote('${p.id}')"><img src="${av(p.seed)}">${esc(p.name)}</button>`).join('')}<button class="opt ${G.v=='skip'?'on':''}" onclick="castVote('skip')">Скип — пропустить голосование</button><button class="btn" ${G.v==null?'disabled':''} onclick="resolve()">Подтвердить</button>`:'<div class="wait"><div class="sp"></div>Идёт голосование…</div>'}
+else h=`<h3>Итог</h3><p>${G.msg}</p>`;
+if(sd.dataset.k!=h){sd.dataset.k=h;sd.innerHTML=h}}
+function openP(id){const p=G.ps.find(x=>x.id==id),mine=id=='me',cs=mine?p.cards:p.shown;
+$('#md').innerHTML=`<div class="bd" onclick="this.remove()"><div class="mdl"><img src="${av(p.seed)}"><h2>${esc(p.name)}</h2><div class="mut">${p.alive?'В игре':'Изгнан'}</div>${cs.length?cs.map(c=>`<div class="tile ${mine&&!c.open?'hid':''}">${ic(c.i)}<span><small>${c.k}${mine&&!c.open?' · скрыто от других':''}</small>${esc(c.v)}</span></div>`).join(''):'<p class="mut">Пока ничего не раскрыто.</p>'}<p class="mut" style="font-size:12px">Нажмите в любом месте, чтобы закрыть</p></div></div>`}
+function endScr(){const w=G.ps.filter(p=>p.alive),ok=G.me.alive;show(`<div class="card wide"><div class="stage-tag">Финал</div><h2 style="color:${ok?'var(--ac)':'var(--rd)'}">${ok?'Вы попали в бункер':'Вас изгнали из бункера'}</h2><div class="mut">Выжившие (${w.length})</div><div class="ring" style="margin:6px 0">${w.map(p=>`<div class="pl rdy"><img src="${av(p.seed)}"><b>${esc(p.name)}</b></div>`).join('')}</div><button class="btn" onclick="menu()">В главное меню</button></div>`)}
+me&&me.name?menu():profile();
+</script></body></html>

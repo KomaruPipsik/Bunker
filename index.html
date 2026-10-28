@@ -210,8 +210,8 @@ const pp=p=>L&&L.room?L.room.presence(p).catch(()=>{}):0;
 function thumb(src,sz=44){return new Promise(res=>{const im=new Image();im.onload=()=>{const c=document.createElement('canvas');c.width=c.height=sz;const s=Math.min(im.width,im.height);c.getContext('2d').drawImage(im,(im.width-s)/2,(im.height-s)/2,s,s,0,0,sz,sz);res(c.toDataURL('image/jpeg',.5))};im.onerror=()=>res('');im.src=src})}
 function lplayers(){const m=new Map();let hb=[];L.room.peers().forEach(p=>{const x=p.presence;if(p.kind!='viewer'||!x||!x.id)return;if(x.h&&Array.isArray(x.bots))hb=x.bots;m.set(x.id,{id:x.id==MYID?'me':x.id,rid:x.id,name:String(x.n||'Игрок'),seed:x.id==MYID?me.seed:(x.s||x.t||x.id),ready:!!x.r,host:!!x.h,bot:false})});
 return [...m.values()].sort((a,b)=>b.host-a.host).concat(hb.map(b=>({id:b.id,rid:b.id,name:String(b.n),seed:b.s,ready:true,bot:true})))}
-async function enterRoom(){const r=window.claude&&claude.use?await claude.use('room').catch(()=>null):null;if(!r)return 'Мультиплеер недоступен: откройте игру по ссылке в аккаунте claude.ai';
-let nr;try{nr=await r.join('bk-'+L.code.toLowerCase())}catch(e){return 'Не удалось войти в комнату ('+(e.code||'ошибка')+')'}
+async function enterRoom(){const r=window.claude&&claude.use?await claude.use('room').catch(()=>null):null;
+let nr;try{nr=r?await r.join('bk-'+L.code.toLowerCase()):await p2pRoom('bk-'+L.code.toLowerCase())}catch(e){return 'Не удалось войти в комнату ('+(e.code||'ошибка')+')'}
 L.room=nr;const t=String(me.seed).startsWith('data:')?await thumb(me.seed):'';const q={id:MYID,n:me.name.slice(0,16),r:L.ready?1:0};if(t)q.t=t;else q.s=me.seed;
 if(L.admin)Object.assign(q,{h:1,o:L.open?1:0,mx:L.max,tm:L.timer,code:L.code,bots:L.bots});
 await nr.presence(q);L.un=[nr.on('g',gmsg),nr.onPeers(()=>{if(!L||!L.room)return;if(G){if(G.tabReady){syncShown();draw()}}else if($('#ring'))lview()})];return ''}
@@ -274,5 +274,22 @@ function skipTalk(){if(L&&L.admin&&L.H)L.H.t=1;else toast('Завершить о
 function doReveal(){const m=G.me;if(!m.alive||G.sent)return;const f=m.cards.filter(c=>!c.open);if(f.length){if(G.sel==null)return;const c=m.cards[G.sel];c.open=true;m.shown.push(c);G.sh.push([G.round,c.i,c.v])}G.sent=1;pp({sh:G.sh,pk:G.round});draw()}
 function resolve(){if(G.sent||G.v==null)return;G.sent=1;pp({vt:[G.round,G.v]});draw()}
 const _draw=draw;draw=function(){_draw();if(G&&G.sent&&G.me.alive&&(G.ph=='pick'||G.ph=='vote'))$('#sd').innerHTML='<div class="wait"><div class="sp"></div>Ожидание остальных игроков…</div>'};
+/* Резервный мультиплеер для GitHub Pages и любого хостинга: WebRTC через PeerJS, первый в комнате — хаб (тот же API, что у room) */
+function loadPeer(){return window.Peer?Promise.resolve():new Promise((ok,no)=>{const s=document.createElement('script');s.src='https://cdn.jsdelivr.net/npm/peerjs@1.5.4/dist/peerjs.min.js';s.onload=ok;s.onerror=()=>no({code:'не загрузился PeerJS'});document.head.appendChild(s)})}
+function p2pRoom(name){return loadPeer().then(()=>new Promise((resolve,reject)=>{const hubId='bunker-'+name,tp={},ch=[],conns={};let table={},mine={},hub=false,up=null,peer=null,pid='',done=false;
+const snap=()=>{const t={...table};if(pid&&!hub)t[pid]={...(table[pid]||{}),...mine};return Object.keys(t).map(k=>({peer:k,by:null,isMe:k==pid,sameTab:k==pid,kind:'viewer',guest:false,presence:t[k],updatedAt:Date.now()}))};
+const notify=()=>{const s=snap();ch.forEach(f=>f({peers:s,joined:[],left:[],updated:[]}))};
+const fire=(from,topic,data)=>(tp[topic]||[]).slice().forEach(f=>f({peer:from,topic,data,isMe:from==pid,sameTab:from==pid,kind:'viewer',by:null,guest:false}));
+const bcast=o=>Object.values(conns).forEach(c=>{if(c.open)c.send(o)});
+const hubEmit=(from,topic,data)=>{bcast({t:'e',topic,data,from});fire(from,topic,data)};
+const hubSnap=()=>{bcast({t:'s',table});notify()};
+const room={name,emit:async(topic,data)=>{if(hub)hubEmit(pid,topic,data);else if(up&&up.open)up.send({t:'e',topic,data})},
+on:(topic,f)=>{(tp[topic]=tp[topic]||[]).push(f);return()=>{tp[topic]=(tp[topic]||[]).filter(x=>x!==f)}},
+presence:async patch=>{Object.assign(mine,patch);for(const k in patch)if(patch[k]===null)delete mine[k];if(hub){table[pid]={...mine};hubSnap()}else{if(up&&up.open)up.send({t:'p',d:patch});notify()}},
+peers:snap,onPeers:f=>{ch.push(f);return()=>{const i=ch.indexOf(f);if(i>=0)ch.splice(i,1)}},connected:()=>true,leave:async()=>{try{peer&&peer.destroy()}catch(e){}}};
+const fail=e=>{if(!done){done=true;reject(e)}};setTimeout(()=>fail({code:'таймаут'}),12000);
+const asHub=()=>{hub=true;table[pid]={...mine};peer.on('connection',c=>{const gone=()=>{if(conns[c.peer]){delete conns[c.peer];delete table[c.peer];hubSnap()}};c.on('open',()=>{conns[c.peer]=c;table[c.peer]={};c.send({t:'s',table});hubSnap()});c.on('data',d=>{if(!d)return;if(d.t=='p'){const x={...(table[c.peer]||{}),...d.d};for(const k in d.d)if(d.d[k]===null)delete x[k];table[c.peer]=x;hubSnap()}else if(d.t=='e')hubEmit(c.peer,d.topic,d.data)});c.on('close',gone);c.on('error',gone)});done=true;resolve(room)};
+const asClient=()=>{peer=new Peer();peer.on('error',fail);peer.on('open',id=>{pid=id;up=peer.connect(hubId,{reliable:true});up.on('open',()=>{done=true;resolve(room)});up.on('data',d=>{if(!d)return;if(d.t=='s'){table=d.table||{};notify()}else if(d.t=='e')fire(d.from,d.topic,d.data)});up.on('close',()=>{table={};notify();toast('Связь с админом потеряна')})})};
+peer=new Peer(hubId);peer.on('open',id=>{pid=id;asHub()});peer.on('error',e=>{if(e.type=='unavailable-id'&&!pid){try{peer.destroy()}catch(x){}asClient()}else fail(e)})}))}
 applyCfg();vb();me&&me.name?menu():profile();
 </script></body></html>

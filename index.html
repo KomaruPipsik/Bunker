@@ -204,5 +204,75 @@ if(sd.dataset.k!=h){sd.dataset.k=h;sd.innerHTML=h}}
 function openP(id){const p=G.ps.find(x=>x.id==id),mine=id=='me',cs=mine?p.cards:p.shown;
 $('#md').innerHTML=`<div class="bd" onclick="this.remove()"><div class="mdl"><img src="${av(p.seed)}"><h2>${esc(p.name)}</h2><div class="mut">${p.alive?'В игре':'Изгнан'}</div>${cs.length?cs.map(c=>`<div class="tile ${mine&&!c.open?'hid':''}">${ic(c.i)}<span><small>${c.k}${mine&&!c.open?' · скрыто от других':''}</small>${esc(c.v)}</span></div>`).join(''):'<p class="mut">Пока ничего не раскрыто.</p>'}<p class="mut" style="font-size:12px">Нажмите в любом месте, чтобы закрыть</p></div></div>`}
 function endScr(){const w=G.ps.filter(p=>p.alive),ok=G.me.alive;show(`<div class="card wide"><div class="stage-tag">Финал</div><h2 style="color:${ok?'var(--ac)':'var(--rd)'}">${ok?'Вы попали в бункер':'Вас изгнали из бункера'}</h2><div class="mut">Выжившие (${w.length})</div><div class="ring" style="margin:6px 0">${w.map(p=>`<div class="pl rdy"><img src="${av(p.seed)}"><b>${esc(p.name)}</b></div>`).join('')}</div><button class="btn" onclick="menu()">В главное меню</button></div>`)}
+/* ===== Мультиплеер через room ===== */
+const MYID='p'+Math.random().toString(36).slice(2,9);
+const pp=p=>L&&L.room?L.room.presence(p).catch(()=>{}):0;
+function thumb(src,sz=44){return new Promise(res=>{const im=new Image();im.onload=()=>{const c=document.createElement('canvas');c.width=c.height=sz;const s=Math.min(im.width,im.height);c.getContext('2d').drawImage(im,(im.width-s)/2,(im.height-s)/2,s,s,0,0,sz,sz);res(c.toDataURL('image/jpeg',.5))};im.onerror=()=>res('');im.src=src})}
+function lplayers(){const m=new Map();let hb=[];L.room.peers().forEach(p=>{const x=p.presence;if(p.kind!='viewer'||!x||!x.id)return;if(x.h&&Array.isArray(x.bots))hb=x.bots;m.set(x.id,{id:x.id==MYID?'me':x.id,rid:x.id,name:String(x.n||'Игрок'),seed:x.id==MYID?me.seed:(x.s||x.t||x.id),ready:!!x.r,host:!!x.h,bot:false})});
+return [...m.values()].sort((a,b)=>b.host-a.host).concat(hb.map(b=>({id:b.id,rid:b.id,name:String(b.n),seed:b.s,ready:true,bot:true})))}
+async function enterRoom(){const r=window.claude&&claude.use?await claude.use('room').catch(()=>null):null;if(!r)return 'Мультиплеер недоступен: откройте игру по ссылке в аккаунте claude.ai';
+let nr;try{nr=await r.join('bk-'+L.code.toLowerCase())}catch(e){return 'Не удалось войти в комнату ('+(e.code||'ошибка')+')'}
+L.room=nr;const t=String(me.seed).startsWith('data:')?await thumb(me.seed):'';const q={id:MYID,n:me.name.slice(0,16),r:L.ready?1:0};if(t)q.t=t;else q.s=me.seed;
+if(L.admin)Object.assign(q,{h:1,o:L.open?1:0,mx:L.max,tm:L.timer,code:L.code,bots:L.bots});
+await nr.presence(q);L.un=[nr.on('g',gmsg),nr.onPeers(()=>{if(!L||!L.room)return;if(G){if(G.tabReady){syncShown();draw()}}else if($('#ring'))lview()})];return ''}
+async function findHost(){for(let i=0;i<14;i++){const h=L.room.peers().find(p=>p.presence&&p.presence.h&&p.presence.code==L.code);if(h)return h.presence;await new Promise(r=>setTimeout(r,300))}return null}
+function leaveRoom(){if(!L)return;clearInterval(L.int);clearInterval(L.hi);(L.un||[]).forEach(f=>{try{f()}catch(e){}});try{L.room&&L.room.leave()}catch(e){}L=null}
+const _menu=menu;menu=function(){leaveRoom();G=null;_menu()};
+function leave(){leaveRoom();menu()}
+const L0=()=>({players:[],bots:[],ready:false,seen:new Set(),un:[],open:true});
+async function createLobby(){const max=+$('#mx').value,timer=+$('#tm').value;L=Object.assign(L0(),{code:gen(),admin:true,max,timer});const e=await enterRoom();if(e){toast(e);L=null;return}lobbyScr()}
+async function joinGo(){const c=$('#jc').value.trim().toUpperCase();if(!c)return;$('#err').textContent='Подключение…';L=Object.assign(L0(),{code:c,admin:false,max:16,timer:60});const e=await enterRoom();if(e){$('#err').textContent=e;leaveRoom();return}
+const h=await findHost();if(!h||!h.o){$('#err').textContent=h?'Лобби закрыто':'Лобби не найдено или закрыто';leaveRoom();return}
+if(lplayers().length>h.mx){$('#err').textContent='Лобби заполнено';leaveRoom();return}L.max=h.mx;L.timer=h.tm;lobbyScr()}
+function lobbyScr(){show(`<div class="lob"><div class="top2"><div style="text-align:left"><span class="mut">КОД КОМНАТЫ</span><div class="code" id="code" onclick="copyCode()" style="cursor:pointer" title="Скопировать"></div></div><div class="cnt" id="cnt"></div></div><div class="ring" id="ring"></div><div class="row" id="act"></div></div>`);L.ak='';L.int=setInterval(lobbyTick,800);lview()}
+function lview(){if(!L||!$('#ring'))return;const ps=lplayers();L.players=ps;$('#code').textContent=L.code;$('#cnt').textContent=`Игроки: ${ps.length}/${L.max}`+(ps.length<2?' · нужно минимум 2':'');
+$('#ring').innerHTML=ps.map(p=>{const nw=!L.seen.has(p.rid);L.seen.add(p.rid);return `<div class="pl ${p.ready?'rdy':''} ${nw?'pop':''}"><img src="${av(p.seed)}"><b>${esc(p.name)}</b>${p.host?'<small class="mut">админ</small>':''}</div>`}).join('');
+const k=[L.open,L.ready,L.starting,L.admin].join();if(k!==L.ak){L.ak=k;$('#act').innerHTML=`<button class="btn" ${L.starting?'disabled':''} onclick="toggleReady()">${L.ready?'Отменить готовность':'Готово'}</button><button class="ghost" onclick="copyCode()">Скопировать код</button>`+(L.admin?`<button class="ghost dng" ${L.open?'':'disabled'} onclick="closeLobby()">${L.open?'Закрыть лобби':'Лобби закрыто'}</button><button class="ghost" onclick="newCode()">Сменить код</button><button class="ghost" onclick="testBot()">Тестовый бот</button>`:'')+`<button class="ghost" style="border-color:#2c4150;color:var(--mt)" onclick="leave()">Выйти</button>`}}
+function copyCode(){const c=L.code,ok=()=>toast('Код скопирован: '+c),fb=()=>{const t=document.createElement('textarea');t.value=c;document.body.appendChild(t);t.select();try{document.execCommand('copy');ok()}catch(e){toast('Не удалось скопировать. Код: '+c)}t.remove()};
+if(navigator.clipboard&&navigator.clipboard.writeText)navigator.clipboard.writeText(c).then(ok,fb);else fb()}
+function toggleReady(){L.ready=!L.ready;pp({r:L.ready?1:0});L.ak='';lview()}
+function closeLobby(){L.open=false;pp({o:0});L.ak='';lview()}
+async function newCode(){const nc=gen();try{await L.room.emit('g',{mv:nc})}catch(e){}setTimeout(()=>switchRoom(nc),500)}
+async function switchRoom(nc){const o=L.room;(L.un||[]).forEach(f=>f());try{await o.leave()}catch(e){}L.code=nc;L.un=[];const e=await enterRoom();if(e){toast(e);leave();return}L.ak='';lview()}
+function testBot(){if(!L||!L.admin||G)return;if(lplayers().length>=L.max||L.bots.length>=4){toast('Лимит тестовых ботов или мест');return}const u=lplayers().map(p=>p.name),f=BN.filter(n=>!u.includes(n));L.bots.push({id:'b'+(++uid),n:R(f.length?f:BN),s:Math.random().toString(36).slice(2,8)});pp({bots:L.bots});lview()}
+function lobbyTick(){if(!L||G)return;lview();if(L.admin&&!L.starting){const ps=lplayers();if(ps.length>=2&&ps.every(p=>p.ready)){L.starting=1;L.open=false;pp({o:0});L.ak='';lview();setTimeout(hostStart,1000)}}}
+/* хост ведёт партию, остальные получают состояние через emit('g'), действия — через presence */
+function hostStart(){if(!L)return;const ps=lplayers(),ids=shuf(ps.map(p=>p.rid)),names={};ps.forEach(p=>names[p.rid]=p.name);
+L.H={v:0,ph:'cat',rd:1,t:0,age:0,tm:L.timer,tg:Math.max(1,ids.length>>1),order:ids,dead:[],bs:{},names,bots:L.bots.map(b=>({...b,cards:mkCards()})),cat:R(CATS).split('|'),bk:{d:`${R(SZ)}, расположен ${R(LOC)}. Состояние: ${R(ST)}. Запасов хватит на ${6+rnd(60)} мес.`,it:shuf(ITEMS).slice(0,2+rnd(14))},msg:''};emitG();L.hi=setInterval(hostTick,1000)}
+function emitG(){const H=L.H;H.v++;const d={v:H.v,ph:H.ph,rd:H.rd,t:H.t,tm:H.tm,tg:H.tg,order:H.order,bots:H.bots.map(b=>({id:b.id,n:b.n,s:b.s})),dead:H.dead,bs:H.bs,msg:H.msg};if(H.ph=='cat'){d.cat=H.cat;d.bk=H.bk}L.room.emit('g',d).catch(()=>toast('Не удалось отправить состояние игры: для хоста нужен уровень доступа Contributor или выше'))}
+const hpr=id=>{const p=L.room.peers().find(q=>q.presence&&q.presence.id==id);return p?p.presence:null};
+function hgo(ph){const H=L.H;H.ph=ph;H.age=0;if(ph=='talk')H.t=H.tm;if(ph=='reveal')H.bots.forEach(b=>{if(H.dead.includes(b.id))return;const f=b.cards.filter(c=>!c.open);if(f.length){const c=R(f);c.open=true;H.bs[b.id]=(H.bs[b.id]||[]).concat([[H.rd,c.i,c.v]])}});emitG()}
+function hostTick(){if(!L||!L.H)return;const H=L.H;H.age++;const hum=H.order.filter(id=>!H.bots.some(b=>b.id==id)),ha=hum.filter(id=>!H.dead.includes(id)),rdy=(id,f)=>{const x=hpr(id);return !x||f(x)};
+if(H.ph=='cat'){if(hum.every(id=>rdy(id,x=>x.cr)))hgo('talk')}
+else if(H.ph=='talk'){H.t--;if(H.t<=0)hgo('pick');else emitG()}
+else if(H.ph=='pick'){if(ha.every(id=>rdy(id,x=>x.pk==H.rd))||H.age>75)hgo('reveal');else if(H.age%2==0)emitG()}
+else if(H.ph=='reveal'){if(H.age>=3)hgo('vote')}
+else if(H.ph=='vote'){if(ha.every(id=>rdy(id,x=>x.vt&&x.vt[0]==H.rd))||H.age>60)hostResolve();else if(H.age%2==0)emitG()}
+else if(H.ph=='res'){if(H.age>=4){if(H.order.filter(id=>!H.dead.includes(id)).length<=H.tg)hgo('end');else{H.rd++;hgo('talk')}}else if(H.age%2==0)emitG()}
+else if(H.ph=='end'&&H.age%3==0)emitG()}
+function hostResolve(){const H=L.H,al=H.order.filter(id=>!H.dead.includes(id)),cnt={};let sk=0;const pop=R(al);
+al.forEach(id=>{let v=null;if(H.bots.some(b=>b.id==id)){const o=al.filter(x=>x!=id);v=Math.random()<.15?'skip':(Math.random()<.55&&pop!=id?pop:R(o))}else{const x=hpr(id);if(x&&x.vt&&x.vt[0]==H.rd)v=x.vt[1]}
+if(v==null)return;if(v=='skip')sk++;else if(al.includes(v)&&v!=id)cnt[v]=(cnt[v]||0)+1});
+let mx=0,top=[];for(const k in cnt){if(cnt[k]>mx){mx=cnt[k];top=[k]}else if(cnt[k]==mx)top.push(k)}
+if(top.length!=1||sk>=mx)H.msg='Никто не изгнан: голоса разделились или большинство за пропуск.';else{H.dead.push(top[0]);H.msg='Изгнан из бункера: '+H.names[top[0]]+'.'}hgo('res')}
+/* клиент */
+function gmsg(m){const d=m.data||{};if(!L||!L.room)return;const fromHost=L.room.peers().some(p=>p.peer==m.peer&&p.presence&&p.presence.h);if(!fromHost)return;if(d.mv){if(!L.admin)switchRoom(String(d.mv).slice(0,8));return}if(d.ph)applyG(d)}
+function startLocal(m){clearInterval(L.int);const pe=L.room.peers();const ps=m.order.map(id=>{const b=m.bots.find(b=>b.id==id);if(b)return{id,rid:id,name:b.n,seed:b.s,bot:true,alive:true,shown:[],cards:[]};const x=(pe.find(p=>p.presence&&p.presence.id==id)||{}).presence||{},me_=id==MYID;return{id:me_?'me':id,rid:id,name:String(x.n||'Игрок'),seed:me_?me.seed:(x.s||x.t||id),bot:false,alive:true,shown:[],cards:me_?mkCards():[]}});
+G={ps,me:ps.find(p=>p.id=='me'),timer:m.tm,target:m.tg,round:1,cat:m.cat,bk:m.bk,ph:'cat',v0:-1,sh:[],dead:[],bs:{}};catScr()}
+function applyG(m){if(!G){if(m.ph!='cat'||!m.order||!m.order.includes(MYID)||!m.cat)return;return startLocal(m)}
+if(m.v<=G.v0)return;G.v0=m.v;G.round=m.rd;G.timer=m.tm;G.msg=m.msg;G.bs=m.bs||{};G.dead=m.dead||[];G.ps.forEach(p=>p.alive=!G.dead.includes(p.rid));
+if(m.ph=='end'){if(!G.ended){G.ended=1;G.ph='end';endScr()}return}if(m.ph=='cat')return;
+const ch=G.ph!=m.ph||G.rdp!=m.rd;G.ph=m.ph;G.rdp=m.rd;
+if(!G.tab){if(!G.cased)return;G.tab=1;const cs=$('#cs');if(cs){cs.classList.add('closing');cs.classList.remove('open')}setTimeout(tableScr,1100);return}
+if(!G.tabReady)return;if(ch){G.sent=0;G.sel=null;G.v=undefined}syncShown();draw();if(m.ph=='talk')upd(m.t);else $('#tm').textContent='--'}
+function syncShown(){if(!G||!L||!L.room)return;const pe=L.room.peers(),vis=r=>r<G.round||(r==G.round&&['reveal','vote','res','end'].includes(G.ph));
+G.ps.forEach(p=>{if(p.id=='me')return;let l=[];if(p.bot)l=G.bs[p.rid]||[];else{const x=(pe.find(q=>q.presence&&q.presence.id==p.rid)||{}).presence;l=(x&&x.sh)||[]}p.shown=l.filter(e=>vis(e[0])).map(e=>({k:KEYS[e[1]],i:e[1],v:e[2]}))})}
+function caseDone(){G.cased=1;pp({cr:1});$('#cb').innerHTML='<div class="wait"><div class="sp"></div>Ожидание остальных игроков…</div>'}
+const _ts=tableScr;tableScr=function(){_ts();G.tabReady=1;syncShown();draw()};
+function talk(){draw();upd(G.t||G.timer)}
+function skipTalk(){if(L&&L.admin&&L.H)L.H.t=1;else toast('Завершить обсуждение досрочно может только админ')}
+function doReveal(){const m=G.me;if(!m.alive||G.sent)return;const f=m.cards.filter(c=>!c.open);if(f.length){if(G.sel==null)return;const c=m.cards[G.sel];c.open=true;m.shown.push(c);G.sh.push([G.round,c.i,c.v])}G.sent=1;pp({sh:G.sh,pk:G.round});draw()}
+function resolve(){if(G.sent||G.v==null)return;G.sent=1;pp({vt:[G.round,G.v]});draw()}
+const _draw=draw;draw=function(){_draw();if(G&&G.sent&&G.me.alive&&(G.ph=='pick'||G.ph=='vote'))$('#sd').innerHTML='<div class="wait"><div class="sp"></div>Ожидание остальных игроков…</div>'};
 applyCfg();vb();me&&me.name?menu():profile();
 </script></body></html>

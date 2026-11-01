@@ -112,6 +112,14 @@ body.room #bgfx{background:radial-gradient(ellipse 62% 48% at 50% 54%,#454e58aa,
 .fxl .w{left:100%;width:70px;height:2px;animation-name:wnd}@keyframes wnd{to{transform:translateX(-900px)}}
 .fxl .lz{top:-30%;width:2px;height:70px;background:linear-gradient(#ff4d5e,transparent);animation-name:fl}
 @media(max-width:760px){.dev{width:auto;top:auto;bottom:112px;left:6px;flex-direction:row;flex-wrap:wrap;max-width:62vw}.dv{width:98px;padding:5px 6px}}
+
+.hdr .rem{display:none!important}
+.tb img{filter:hue-rotate(calc(var(--hr,0deg)*-1))!important}.seat::before,.seat::after{filter:hue-rotate(calc(var(--hr,0deg)*-1))}.fxl{filter:hue-rotate(calc(var(--hr,0deg)*-1))}
+.pzo{display:flex!important;flex-direction:column;align-items:center;justify-content:center;gap:18px}.pzo .btn{width:auto;font-size:15px;letter-spacing:.05em;animation:none}
+.fgw{display:flex;justify-content:space-between;padding:6px 50px}.fgw>div{display:flex;flex-direction:column;gap:12px}.wt{width:52px;height:24px;border-radius:8px;border:2px solid #fff3;cursor:pointer}.wt.sel{outline:2px solid #fff}.wt.done{opacity:.3}
+.fgg{display:grid;grid-template-columns:repeat(4,1fr);gap:6px}.fc2{height:46px;border-radius:8px;border:1px solid #2b4150;background:#0a1117;cursor:pointer}.fc2.dust{background:radial-gradient(circle,#9a8a6a,#4a4030);animation:blinkb 1s infinite}
+.fgt{position:relative;height:26px;border-radius:13px;background:linear-gradient(90deg,#4da3ff,#ffd34d,#ff4d5e);margin:14px 6px 6px}.fgz{position:absolute;left:45%;width:30%;top:0;bottom:0;border:2px solid #fff;border-radius:13px;background:#35ffa044}.fgt i{position:absolute;top:-5px;width:6px;height:36px;background:#fff;border-radius:3px;transition:left .2s}
+.vl{height:64px;border-radius:12px;border:1px solid #2b4150;background:#0a1117;color:var(--ac);cursor:pointer;display:grid;place-items:center}.vl svg{transition:transform .2s}
 </style></head><body><div id="bgfx"></div><div id="app"></div><div id="md"></div><div id="vbar"></div><script>
 const $=s=>document.querySelector(s),R=a=>a[Math.random()*a.length|0],S=s=>s.split(','),rnd=n=>Math.random()*n|0,shuf=a=>a.map(x=>[Math.random(),x]).sort((a,b)=>a[0]-b[0]).map(x=>x[1]);
 const esc=s=>String(s).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
@@ -357,7 +365,7 @@ if(/зомби|мертвец|гриб|безуми|разум/.test(t))return[N
 if(/вулкан|лав/.test(t))return[dr('#ff7a2a',3,3,3,'50%')+dr('#555',5,5,6,'50%'),0];if(/зима|ледник|ночь/.test(t))return[dr('#dfe8ee',4,4,6,'50%'),170];if(/ядерн|пыл/.test(t))return[dr('#9a9a8a',4,4,5,'50%'),30];
 if(/метеор|спутник|сверхнов|лазер|вспышк|луна|планет/.test(t))return[N(10,()=>`<i class="m" style="left:${40+rnd(60)}%;top:${rnd(40)}%;animation-duration:${1.2+Math.random()*1.5}s;animation-delay:-${rnd(3)}s"></i>`),20];
 return[dr('#ff6b4a',3,3,5,'50%'),0]}
-const _cat=catScr;catScr=function(){_cat();const b=$('.card .banner');if(!b)return;const[f,h]=fxk(G.cat[0]),w=document.createElement('div');w.style.cssText='position:relative;width:100%';b.replaceWith(w);w.appendChild(b);b.style.filter=`hue-rotate(${h}deg)`;w.insertAdjacentHTML('beforeend','<div class="fxl">'+f+'</div>')};
+const _cat=catScr;catScr=function(){_cat();const b=$('.card .banner');if(!b)return;const[f,h]=fxk(G.cat[0]),w=document.createElement('div');w.style.cssText='position:relative;width:100%';b.replaceWith(w);w.appendChild(b);b.style.filter=`hue-rotate(calc(${h}deg + var(--hr,0deg) * -1))`;w.insertAdjacentHTML('beforeend','<div class="fxl">'+f+'</div>')};
 function openInfo(k){const c=k=='c';$('#md').innerHTML=`<div class="bd" onclick="this.remove()"><div class="mdl" onclick="event.stopPropagation()">${c?`${BAN(0)}<h2>${esc(G.cat[0])}</h2><p>${esc(G.cat[1])}</p>`:`${BAN(1)}<p>${esc(G.bk.d)}</p><div class="mut">Припасы (${G.bk.it.length})</div><div class="items">${G.bk.it.map(x=>`<span>${ic(6)}${esc(x)}</span>`).join('')}</div>`}<button class="btn" style="margin-top:12px" onclick="$('#md').innerHTML=''">Закрыть</button></div></div>`}
 const CH={m:[],un:0,open:false};
 function cmsg(m){const d=m.data||{};CH.m.push({n:String(d.n||'?').slice(0,16),t:String(d.t||'').slice(0,200),me:d.i==MYID});if(CH.m.length>60)CH.m.shift();if(CH.open)chatDraw();else{CH.un++;vb()}}
@@ -540,7 +548,7 @@ if(G.tu&&G.sp==MYID&&G.ph=='talk'&&!$('#nxt'))sd.insertAdjacentHTML('beforeend',
 if(G.sabRole&&G.me.alive&&(G.ph=='talk'||G.ph=='pick')&&G.sabLeft>0&&G.sabUsed!=G.round&&!$('#sabb'))sd.insertAdjacentHTML('beforeend','<button class="ghost dng" id="sabb" onclick="sabBtn()">Устроить саботаж (осталось '+G.sabLeft+')</button>');
 if(L.admin&&!$('#pzb'))sd.insertAdjacentHTML('beforeend','<button class="ghost" id="pzb" onclick="togglePause()">Пауза</button>');
 const pe=L.room.peers();G.ps.forEach(p=>{const s=$('#s_'+p.id);if(!s)return;s.classList.toggle('speak',!!(G.tu&&G.ph=='talk'&&p.rid==G.sp));const x=p.id=='me'?{cs:shopEq()}:((pe.find(q=>q.presence&&q.presence.id==p.rid)||{}).presence||{}),cs=x.cs||['',''];s.dataset.fr=cs[0]||'';s.style.setProperty('--cc',cs[1]||'#3a444d')});
-let z=$('#pzo');if(G.pz){if(!z){z=document.createElement('div');z.id='pzo';z.className='pzo';z.textContent='ПАУЗА';document.body.appendChild(z)}}else if(z)z.remove()};
+let z=$('#pzo');if(G.pz){if(!z){z=document.createElement('div');z.id='pzo';z.className='pzo';z.innerHTML='<div>ПАУЗА</div>'+(L.admin?'<button class="btn" onclick="togglePause()">Продолжить</button>':'<div style="font-size:14px;letter-spacing:.1em;color:var(--mt)">Ждём админа</div>');document.body.appendChild(z)}}else if(z)z.remove()};
 function qrShow(){const u=location.href.split('?')[0].split('#')[0]+'?code='+L.code,go=()=>{const q=qrcode(0,'M');q.addData(u);q.make();$('#md').innerHTML=`<div class="bd" onclick="this.remove()"><div class="mdl"><h2>Код ${L.code}</h2><div style="background:#fff;padding:12px;border-radius:12px;display:inline-block">${q.createSvgTag(5)}</div><p class="mut">Наведите камеру — откроется игра с введённым кодом</p></div></div>`};if(window.qrcode)go();else{const s=document.createElement('script');s.src='https://cdn.jsdelivr.net/npm/qrcode-generator@1.4.4/qrcode.js';s.onload=go;s.onerror=()=>toast('Не удалось загрузить QR');document.head.appendChild(s)}}
 let noHostAt=0;
 setInterval(()=>{if(!L||!L.room||L.admin)return;const pe=L.room.peers();if(pe.some(p=>p.presence&&p.presence.h)){noHostAt=0;return}if(!noHostAt){noHostAt=Date.now();return}if(Date.now()-noHostAt<7000)return;const ids=pe.map(p=>p.presence&&p.presence.id).filter(Boolean).sort();if(ids[0]!=MYID)return;noHostAt=0;takeover()},1500);
@@ -584,7 +592,7 @@ if(H.ph!='cat'&&H.ph!='end'){
 hum.forEach(id=>{if(H.dead.includes(id))return;if(!hpr(id)){H.gone[id]=(H.gone[id]||0)+1;if(H.gone[id]>=8){H.dead.push(id);H.left.push(id);H.msg=(H.names[id]||'Игрок')+' покинул игру'}}else H.gone[id]=0});
 if(!H.sys.gen.ok){H.pw=Math.max(0,H.pw-1.2);if(H.pw<=0){H.fail='power';hgo('end');return}}
 let busy=false;for(const k in H.sys){const s=H.sys[k];if(s.ok||!s.by)continue;busy=true;if(!hpr(s.by)||H.dead.includes(s.by)){s.by='';continue}
-if(H.tk-s.at>=6){s.ok=1;if(s.fxd){for(const a in s.fxd)if(H.fx[a]!==undefined)H.fx[a]-=s.fxd[a];s.fxd=null}const who=s.by;s.by='';if(k=='gen')H.pw=100;H.hp=Math.min(100,H.hp+3);H.evn=(H.evn||0)+1;H.evt='Починено: '+SYSN[k]+' ('+(H.names[who]||'?')+')';H.evs=0;if(!H.bots.length)L.room.emit('q',{t:'reward',to:who,c:2+rnd(4)}).catch(()=>{})}}
+if(H.tk-s.at>60)s.by=''}
 if(busy&&!['talk','pick','vote','last'].includes(H.ph))emitG()}
 const ha=hum.filter(id=>!H.dead.includes(id));
 if(H.ph=='cat'){if(hum.every(id=>rdy(id,x=>x.cr)))hgo('talk')}
@@ -647,6 +655,33 @@ case'laser':return[N(10,()=>`<i class="lz" style="left:${rnd(100)}%;animation-du
 case'beam':return['<i class="bm"></i>',100];case'quake':return[dr('#8a6a4a',5,5,2,'20%'),15];
 case'sleep':return[N(10,()=>`<i class="zz" style="left:${rnd(95)}%;animation-delay:-${rnd(6)}s">Z</i>`),220]}
 return[dr('#ff6b4a',3,3,5,'50%'),0]}
+
+/* ===== Мини-игры ремонта ===== */
+const FIXG={},WCOL=['#ff4d5e','#35ffa0','#4da3ff','#ffd34d'];
+function openFix(k){G.fgK=k;let d=$('#fg');if(d)d.remove();d=document.createElement('div');d.id='fg';d.className='bd';d.innerHTML=`<div class="mdl" onclick="event.stopPropagation()" style="width:min(460px,100%)"><h2>${SYSN[k]}</h2><div id="fgb"></div><div class="mut" id="fgs" style="margin-top:8px"></div><button class="ghost" style="margin-top:10px" onclick="fixCancel()">Отмена</button></div>`;document.body.appendChild(d);FIXG[k]()}
+function fixCancel(){const d=$('#fg');if(d)d.remove();if(G&&G.fgK){G.fgDone=G.fgDone||{};G.fgDone[G.fgK]=Date.now();L.room.emit('q',{t:'fixcancel',k:G.fgK,from:MYID}).catch(()=>{});G.fgK=null}}
+function fixWin(){const k=G.fgK;if(!k)return;const d=$('#fg');if(d)d.remove();G.fgDone=G.fgDone||{};G.fgDone[k]=Date.now();G.fgK=null;L.room.emit('q',{t:'fixdone',k,from:MYID}).catch(()=>{});sfx('win')}
+FIXG.gen=()=>{const Lc=shuf([0,1,2,3]),Rc=shuf([0,1,2,3]);let sel=null,ok=0;const b=$('#fgb');b.innerHTML='<div class="fgw"><div>'+Lc.map(c=>`<button class="wt" data-s="l" data-c="${c}" style="background:${WCOL[c]}"></button>`).join('')+'</div><div>'+Rc.map(c=>`<button class="wt" data-s="r" data-c="${c}" style="background:${WCOL[c]}"></button>`).join('')+'</div></div>';$('#fgs').textContent='Соедините провода одного цвета: нажмите слева, затем справа';
+b.querySelectorAll('.wt').forEach(e=>e.onclick=()=>{if(e.dataset.d)return;if(e.dataset.s=='l'){b.querySelectorAll('.wt.sel').forEach(x=>x.classList.remove('sel'));sel=e;e.classList.add('sel')}else if(sel){if(sel.dataset.c==e.dataset.c){sel.dataset.d=e.dataset.d='1';sel.classList.add('done');e.classList.add('done');sel.classList.remove('sel');sel=null;sfx('flip');if(++ok==4)setTimeout(fixWin,300)}else{toast('Не тот цвет');sel.classList.remove('sel');sel=null}}})};
+FIXG.vent=()=>{const b=$('#fgb'),ds=new Set();while(ds.size<7)ds.add(rnd(16));let left=7,h='<div class="fgg">';for(let i=0;i<16;i++)h+=`<button class="fc2 ${ds.has(i)?'dust':''}"></button>`;b.innerHTML=h+'</div>';$('#fgs').textContent='Очистите вентиляцию: уберите всю пыль ('+left+')';
+b.querySelectorAll('.fc2').forEach(e=>e.onclick=()=>{if(e.classList.contains('dust')){e.classList.remove('dust');left--;sfx('flip');$('#fgs').textContent='Очистите вентиляцию: уберите всю пыль ('+left+')';if(!left)setTimeout(fixWin,300)}})};
+FIXG.heat=()=>{const b=$('#fgb');let v=20,good=0;b.innerHTML='<div class="fgt"><div class="fgz"></div><i id="fgv"></i></div><button class="btn" id="fgbtn" style="margin-top:12px">Подать топливо</button>';
+const upd=()=>{const e=$('#fgv');if(!e)return;e.style.left=v+'%';$('#fgs').textContent='Держите температуру в зелёной зоне: '+good.toFixed(1)+' / 4 с'};upd();
+const iv=setInterval(()=>{if(!$('#fgv')){clearInterval(iv);return}v=Math.max(0,v-3);if(v>=45&&v<=75)good+=.25;else good=Math.max(0,good-.1);upd();if(good>=4){clearInterval(iv);fixWin()}},250);$('#fgbtn').onclick=()=>{v=Math.min(100,v+8);upd()}};
+FIXG.water=()=>{const b=$('#fgb'),rot=[0,0,0,0,0].map(()=>1+rnd(3)),sv='<svg viewBox="0 0 24 24" width="38"><circle cx="12" cy="12" r="9" fill="none" stroke="currentColor" stroke-width="2"/><path d="M12 3v18M3 12h18" stroke="currentColor" stroke-width="2"/><circle cx="12" cy="3" r="2.4" fill="#ff4d5e"/></svg>';let h='<div class="fgg" style="grid-template-columns:repeat(5,1fr)">';rot.forEach((r,i)=>h+=`<button class="vl" data-i="${i}">${sv}</button>`);b.innerHTML=h+'</div>';
+const els=[...b.querySelectorAll('.vl')],paint=()=>{els.forEach((e,i)=>{const s=e.querySelector('svg');if(s)s.style.transform='rotate('+rot[i]*90+'deg)'});const n=rot.filter(r=>r%4).length;$('#fgs').textContent='Поставьте все вентили красной меткой вверх (осталось '+n+')';if(!n)setTimeout(fixWin,300)};paint();
+els.forEach((e,i)=>e.onclick=()=>{rot[i]=(rot[i]+1)%4;sfx('flip');paint()})};
+function finishFix(H,k){const s=H.sys[k];if(!s||s.ok||!s.by)return;s.ok=1;if(s.fxd){for(const a in s.fxd)if(H.fx[a]!==undefined)H.fx[a]-=s.fxd[a];s.fxd=null}const who=s.by;s.by='';if(k=='gen')H.pw=100;H.hp=Math.min(100,H.hp+3);H.evn=(H.evn||0)+1;H.evt='Починено: '+SYSN[k]+' ('+(H.names[who]||'?')+')';H.evs=0;if(!H.bots.length)L.room.emit('q',{t:'reward',to:who,c:2+rnd(4)}).catch(()=>{});emitG()}
+const _qm4=qmsg;qmsg=function(m){const d=m.data||{};
+if(d.t=='fixdone'){const H=L&&L.admin&&L.H;if(H&&H.sys&&H.sys[d.k]){const s=H.sys[d.k];if(s.by==d.from&&H.tk-s.at>=3)finishFix(H,d.k)}return}
+if(d.t=='fixcancel'){const H=L&&L.admin&&L.H;if(H&&H.sys&&H.sys[d.k]&&H.sys[d.k].by==d.from){H.sys[d.k].by='';emitG()}return}
+_qm4(m)};
+function devDraw(){let d=$('#dev');if(!G||!G.tabReady||G.ended){if(d)d.remove();const f=$('#fg');if(f)f.remove();return}if(!d){d=document.createElement('div');d.id='dev';d.className='dev';document.body.appendChild(d)}
+const sy=G.sy||{};if(G.fgK&&(!sy[G.fgK]||sy[G.fgK][0]||sy[G.fgK][1]!=MYID)){const f=$('#fg');if(f)f.remove();G.fgK=null}
+const dn=G.fgDone||{};for(const k in sy){if(sy[k][1]==MYID&&!sy[k][0]&&G.fgK!=k&&!$('#fg')&&Date.now()-(dn[k]||0)>5000){openFix(k);break}}
+const key=JSON.stringify([sy,G.me.alive]);if(d.dataset.k==key)return;d.dataset.k=key;
+d.innerHTML=SYS.map(([k,n,i])=>{const s=sy[k]||[1,'',0],ok=s[0],by=s[1],who=by?((G.ps.find(p=>p.rid==by)||{}).name||'?'):'';return `<div class="dv ${ok?'ok':'bad'}"><div class="dh">${ic(i)}<b>${n}</b><span class="led"></span></div>${ok?'<small>Работает</small>':by?`<small>${esc(who)} чинит…</small>`:(G.me.alive?`<button class="ghost" onclick="fixSys('${k}')">Чинить</button>`:'<small>Сломано</small>')}</div>`}).join('')}
+const _d7=draw;draw=function(){_d7();if(!G||!G.tabReady)return;const sd=$('#sd');if(sd){const a=G.ps.filter(p=>p.alive).length-G.target;let r=$('#remb');if(!r){sd.insertAdjacentHTML('afterbegin','<div id="remb" class="rem" style="text-align:center;margin-bottom:6px"></div>');r=$('#remb')}r.textContent='Осталось изгнать: '+Math.max(0,a)}};
 
 applyCfg();vb();
 if(SS&&me&&me.name)resumeSess(SS);else if(me&&me.name)menu();else profile();
